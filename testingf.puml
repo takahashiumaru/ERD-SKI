@@ -1,0 +1,144 @@
+@startuml
+!theme carbon-gray
+skinparam backgroundColor #white
+skinparam defaultFontName Arial
+
+skinparam linetype ortho
+skinparam arrowThickness 2
+
+!$line_color_doctor = "#673AB7"
+!$line_color_outlet = "#4CAF50"
+!$line_color_prescription = "#2196F3"
+
+!$rectangle_color_doctor = "#EDE7F6"
+!$rectangle_color_outlet = "#F1F8E9"
+!$rectangle_color_prescription = "#E3F2FD"
+
+rectangle "Doctor" $rectangle_color_doctor {
+    entity doctor { 
+        id : varchar(10) <<PK>>
+        --
+        name : varchar(10)
+        image : varchar(10)
+        name : varchar(10)
+        gender : varchar(10)
+        practice_location : varchar(10)
+        university : varchar(10)
+        qualification : varchar(10)
+        registration_number: varchar(10)
+        file_number : varchar(10)
+        phone : varchar(10)
+        email : varchar(10)
+        designation_date : varchar(10)
+        valid_until : varchar(10)
+        district : varchar(10)
+        status : varchar(10)
+        certificate_type : varchar(10)
+        specialty_sub_id : varchar(10) <<FK>>
+    }
+
+    entity doctor_specialty_sub { 
+        id : varchar(10) <<PK>>
+        --
+        name : varchar(10)
+        doctor_specialty_id : varchar(10) <<FK>>
+    }
+
+    entity doctor_specialty { 
+        id : varchar(10) <<PK>>
+        --
+        name : varchar(10)
+    }
+}
+entity patient { 
+    id : varchar(10) <<PK>>
+    --
+    image : varchar(100)
+    name : varchar(100)
+    date_of_birth : datetime
+    gender : enum(male,female)
+    address : varchar(200)
+    phone : varchar(20)
+}
+
+entity medicine { 
+    id : varchar(10) <<PK>>
+    --
+    registration_number : varchar(30)
+    date_of_issue : datetime
+    valid_until : datetime
+    issued_by :  varchar(50)
+    dosage_form : varchar(50)
+    composition : varchar(100)
+    brand : varchar(50)
+    packaging : varchar(50)
+    registrant : varchar(50)
+    manuctured_by : varchar(50)
+    image : varchar(100)
+    name : varchar(100)
+    description : varchar(200)
+}
+
+rectangle "Prescription" $rectangle_color_prescription {
+    entity prescription { 
+        id : varchar(10) <<PK>>
+        --
+        doctor_id : varchar(10) <<FK>>
+        patient_id : varchar(10) <<FK>>
+        outlet_id : varchar(10) <<FK>>
+        date_prescribed : datetime
+        total_amount : decimal
+        tax : decimal
+        discount : decimal
+        currency : varchar(10)
+    }
+
+    entity prescription_detail { 
+        id : int <<PK>>
+        --
+        prescription_id : varchar(10) <<FK>>
+        medicine_id : varchar(10) <<FK>>
+        quantity : int
+        price : decimal
+        subtotal : decimal
+    }
+}
+
+rectangle "Outlet" $rectangle_color_outlet {
+    entity outlet { 
+        id : varchar(10) <<PK>>
+        --
+        name : varchar(10)
+        latitude : double
+        longitude : double
+        image : varchar(100)
+        rating : double
+        address : varchar(300)
+        country : varchar(50)
+        province : varchar(50)
+        district : varchar(50)
+        sub_disctrict : varchar(50)
+        outlet_category_id : varchar(10) <<FK>>
+    }
+
+    entity outlet_category { 
+        id : varchar(10) <<PK>>
+        --
+        name : varchar(100)
+    }
+}
+
+doctor_specialty <- doctor_specialty_sub $line_color_doctor
+doctor_specialty_sub <- doctor $line_color_doctor
+doctor <-- prescription $line_color_doctor
+
+outlet <- prescription  $line_color_outlet
+outlet_category <- outlet $line_color_outlet
+
+
+prescription_detail -> prescription  $line_color_prescription
+
+patient <-- prescription
+medicine <-- prescription
+
+@enduml

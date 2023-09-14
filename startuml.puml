@@ -1,0 +1,1372 @@
+@startuml
+!theme carbon-gray
+
+skinparam defaultFontName Arial
+skinparam linetype ortho
+skinparam arrowThickness 2
+skinparam backgroundColor #white
+
+skinparam class{
+    BackgroundColor #FFFFFF
+}
+
+!$rectangle_color_distributor = "#EFEBE9"
+!$rectangle_color_city = "#F9FBE7"
+!$rectangle_color_marketing_user = "#E1F5FE"
+!$rectangle_color_bank = "#EDE7F6"
+!$rectangle_color_product = "#FFFDE7"
+!$rectangle_color_outlet = "#F3E5F5"
+!$rectangle_color_customer = "#E8F5E9"
+!$rectangle_color_event = "#FBE9E7"
+!$rectangle_color_structure = "#FFF3E0"
+!$rectangle_color_master_document = "#FAFAFA"
+!$rectangle_color_discount_proposal = "#FFEBEE"
+!$rectangle_color_discount_proposal_cqrs = "#FFCDD2"
+
+
+
+
+!$line_color_distributor = "#795548"
+!$line_color_city = "#CDDC39"
+!$line_color_marketing_user = "#03A9F4"
+!$line_color_bank = "#673AB7"
+!$line_color_product = "#FFEB3B"
+!$line_color_outlet = "#9C27B0"
+!$line_color_customer = "#4CAF50"
+!$line_color_event = "#FF5722"
+!$line_color_structure = "#FF9800"
+!$line_color_master_document = "#9E9E9E"
+!$line_color_discount_proposal = "#F44336"
+
+
+rectangle "REST API Distributor" $rectangle_color_distributor{
+    entity "distributor" as distributor {
+        + id : bigint(20) <<pk>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + name : varchar(50) <<>UI>>
+        + address : varchar(200)
+    }
+}
+
+rectangle "REST API City" $rectangle_color_city{
+    entity "city" as city {
+        + id : bigint(20) <<pk>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + name : varchar(50) <<>UI>>
+    }
+}
+
+rectangle "REST API Marketing User" $rectangle_color_marketing_user{
+    entity "session" as session {
+        + id : varchar(30) <<pk>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + refresh_uuid : varchar(255) <<>UI>>
+        + user_id : bigint(20)
+        + user_agent : varchar(255)
+        + remote_address : varchar(255)
+        + expired : datetime(3)
+    }
+
+    entity "division" as division {
+        + id : varchar(30) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + name : varchar(30) <<UI>>
+    }
+
+    entity "menu_sidebar" as menu_sidebar {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + group_menu : varchar(100)
+        + nama_menu : varchar(100)
+        + nama_submenu : varchar(200)
+        + program_branch : varchar(200)
+        + path_url : varchar(255)
+        + icon : varchar(255)
+        + order_number : int(11)
+        + router : varchar(8000)
+    }
+
+    entity "user" as user {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + nip : varchar(20) <<PK>>
+        + password : varchar(longtext)
+        + name : varchar(50)
+        + role : varchar(30)
+        + join_date : varchar(8)
+        + resign_date : varchar(8)
+        + phone : varchar(15)
+        + email : varchar(50)
+        + dept : varchar(50)
+        + group_auth_id : bigint(20)
+    }
+
+    entity "group_auth" as group_auth {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + nama_group : varchar(20) <<UI>>
+        + dept_group : varchar(20) <<UI>>
+    }
+
+    entity "group_menu_authentication" as group_menu_authentication {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + group_auth_id : bigint(20) <<FK>>
+        + menu_sidebar_id : bigint(20) <<FK>>
+        + add_access : bool(1)
+        + update_access : bool(1)
+        + delete_access : bool(1)
+        + show_access : bool(1)
+        + confirm_access : bool(1)
+        + print_access : bool(1)
+        + open_access : bool(1)
+    }
+
+    entity "menu_authentication" as menu_authentication {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + user_id : bigint(20) <<FK>>
+        + group_auth_id : bigint(20) <<FK>>
+        + menu_sidebar_id : bigint(20) <<FK>>
+        + add_access : bool(1)
+        + update_access : bool(1)
+        + delete_access : bool(1)
+        + show_access : bool(1)
+        + confirm_access : bool(1)
+        + print_access : bool(1)
+        + open_access : bool(1)
+    }
+}
+
+' FK table user
+group_auth <-- user $line_color_marketing_user : group_auth_id
+
+' FK table menu_authentication
+user <-- menu_authentication $line_color_marketing_user : user_id
+menu_sidebar <-- menu_authentication $line_color_marketing_user : menu_sidebar_id
+group_menu_authentication <-- menu_authentication $line_color_marketing_user : group_auth_id
+
+' FK table group_menu_authentication
+menu_sidebar <-- group_menu_authentication $line_color_marketing_user : menu_sidebar_id
+group_menu_authentication <-- group_menu_authentication $line_color_marketing_user : group_auth_id
+
+rectangle "REST API Bank" $rectangle_color_bank{
+    entity "bank" as bank {
+        + id : bigint(20) <<pk>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + name : varchar(50) <<>UI>>
+    }
+
+    entity "bank_transfer_fee" as bank_transfer_fee {
+        + id : bigint(20) <<pk>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + bank_id : bigint(20) <<FK>>
+        + fee : float(32)
+        + period_start : varchar(8) <<UI>>
+        + period_end : varchar(8) <<UI>>
+    }
+
+    entity "bank_branch" as bank_branch {
+        + id : bigint(20) <<pk>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + bank_id : bigint(20) <<FK>>
+        + name : varchar(50) <<UI>>
+    }    
+
+    entity "account" as account {
+        + id : bigint(20) <<pk>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + bank_id : bigint(20) <<FK>>
+        + bank_branch_id : bigint(20) <<FK>>
+        + customer_id : varchar(20) <<FK>>
+        + name : varchar(70)
+        + note : varchar(500)
+        + is_active : bool(1)
+        + no_account : bigint(255)
+        + bank_account_type : varchar(50)
+        + bank_branch_name : varchar(100)
+        + bank_name : varchar(100)
+        + legal_entity : bool(1)
+        + ktp : varchar(25)
+        + npwp : varchar(25)
+    }    
+}
+
+' FK table bank_transfer_fee
+bank <-- bank_transfer_fee $line_color_bank : bank_id
+
+' FK table bank_branch
+bank <-- bank_branch $line_color_bank : bank_id
+
+' FK table account
+bank <-- account $line_color_bank : bank_id
+bank_branch <-- account $line_color_bank : bank_branch_id
+
+rectangle "REST API Product" $rectangle_color_product{
+    entity "principal" as principal {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + name : varchar(50)
+    }
+
+    entity "product_category" as product_category {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + name : varchar(50)
+    }
+
+    entity "product_packing" as product_packing  {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + name : varchar(50)
+    }
+
+    entity "product_type" as product_type {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + name : varchar(50)
+    }    
+    
+    entity "product_unit" as product_unit {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + name : varchar(50)
+    }  
+
+    entity "product" as product {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + product_unit_id : varchar(5) <<FK>>
+        + product_packing_id : varchar(5) <<FK>>
+        + product_type_id : varchar(10) <<FK>>
+        + product_category_id : varchar(5) <<FK>>
+        + principal_id : varchar(5) <<FK>>
+        + division_id : varchar(30) <<FK>>
+        + name : varchar(100)
+        + description : varchar(longtext)
+    }
+
+    entity "product_program" as product_program {
+        + id : varchar(5) <<PK>> <<UI>>
+        + name_program : varchar(100) <<PK>> <<UI>>
+        + city : varchar(10) <<PK>> <<UI>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + note : varchar(100)
+    }
+
+    entity "product_max_discount" as product_max_discount {
+        + id : bigint(20) <<pk>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + product_id : varchar(20) <<FK>> <<UI>>
+        + product_program_id : varchar(5) <<FK>> <<UI>>
+        + max : float(32)
+        + period_start : varchar(8) <<UI>>
+        + period_end : varchar(8) <<UI>>
+    }  
+    
+    entity "product_picture" as product_picture {
+        + id : bigint(20) <<pk>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + product_id : varchar(20) <<FK>>
+        + picture : varchar(100)
+    }            
+}
+
+' FK table product
+product_unit <-- product $line_color_product : product_unit_id
+product_packing <-- product $line_color_product : product_packing_id
+product_type <-- product $line_color_product : product_type_id
+product_category <-- product $line_color_product : product_category_id
+principal <-- product $line_color_product : principal_id
+division <-- product $line_color_marketing_user  : division_id
+
+' FK table product_max_discount
+product <-- product_max_discount $line_color_product : product_id
+product_program <-- product_max_discount $line_color_product : product_program_id
+
+' FK table product_picture
+product <-- product_picture $line_color_product : product_id
+
+rectangle "REST API Outlet" $rectangle_color_outlet{
+    entity "outlet_type" as outlet_type {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + name : varchar(30) <<UI>>
+    }
+
+    entity "outlet" as outlet {
+        + id : varchar(20) <<PK>> <<Format : city_id + yy + counter(/year/city_id)>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + city_id : varchar(3) <<FK>>
+        + outlet_type_id : bigint(20) <<FK>>
+        + address : varchar(500)
+        + is_centered : bool(1)   
+        + is_panel : bool(1)      
+        + is_transaction : bool(1)
+        + latitude : float(32) 
+        + longitude : float(32)
+        + name : varchar(500)
+        + npwp : varchar(50) 
+        + owner : varchar(50)
+        + phone : varchar(20)
+    }
+
+    entity "outlet_share" as outlet_share {
+        + id : varchar(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + outlet_parent_id : varchar(20) <<FK>> <<UI>>     
+        + outlet_id : varchar(20) <<FK>> <<UI>>     
+    }
+}
+' FK table outlet
+outlet_type <-- outlet $line_color_outlet : outlet_type_id
+city <-- outlet $line_color_city : city_id
+
+' FK table outlet_share
+outlet <-- outlet_share $line_color_outlet : outlet_parent_id
+outlet <-- outlet_share $line_color_outlet : outlet_id
+
+rectangle "REST API Customer" $rectangle_color_customer{
+    entity "customer_group_specialist" as customer_group_specialist {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + title : varchar(30) <<UI>>
+        + description : varchar(150)
+    }
+
+    entity "customer_specialist" as customer_specialist {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + customer_group_specialist_id : bigint(20) <<FK>>
+        + title : varchar(30) <<UI>>
+        + description : varchar(150)
+    }
+
+    entity "customer_inactive_status" as customer_inactive_status {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + name : varchar(30) <<UI>>
+    }        
+
+    entity "customer_position" as customer_position {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + name : varchar(100) <<UI>>
+    }
+
+    entity "customer" as customer {
+        + id : bigint(20) <<PK>> <<Format : yymm + counter(/month)>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + city_id : varchar(3) <<FK>>
+        + customer_specialist_id : bigint(20) <<FK>>
+        + customer_position_id : bigint(20) <<FK>>
+        + customer_inactive_status_id : bigint(20) <<FK>>
+        + name : varchar(500)     
+        + address : varchar(500)  
+        + latitude : float(32)    
+        + longitude : float(32)   
+        + phone : varchar(15)       
+        + place_of_birth : varchar(50)
+        + date_of_birth : datetime(3) 
+        + gender : varchar(20)   
+        + religion : varchar(25) 
+        + email : varchar(50)
+        + ktp : varchar(25) 
+        + npwp : varchar(25)
+    } 
+
+    entity "customer_territory_outlet" as customer_territory_outlet {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + customer_id : varchar(20) <<FK>> <<UI>>
+        + outlet_id : varchar(20) <<FK>> <<UI>>
+        + period : varchar(6) <<UI>>
+        + is_practice : bool(1)
+    }
+
+    entity "customer_territory_product" as customer_territory_product {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + customer_id : varchar(20) <<FK>> <<UI>>
+        + product_id : varchar(20) <<FK>> <<UI>>
+        + period : varchar(6) <<UI>>
+    }                 
+}
+
+' FK table customer_specialist
+customer_group_specialist <-- customer_specialist $line_color_customer : customer_group_specialist_id
+
+' FK table customer
+city <-- customer $line_color_city : city_id
+customer_specialist <-- customer $line_color_customer : customer_specialist_id
+customer_position <-- customer $line_color_customer : customer_position_id
+customer_inactive_status <-- customer  $line_color_customer : customer_inactive_status_id
+
+' FK table customer_territory_outlet
+customer <-- customer_territory_outlet $line_color_customer : customer_id
+outlet <-- customer_territory_outlet $line_color_outlet : outlet_id
+
+' FK table customer_territory_product
+customer <-- customer_territory_product $line_color_customer  : customer_id
+product <-- customer_territory_product $line_color_product : product_id
+
+rectangle "REST API Event" $rectangle_color_event{
+    entity "event_organizer" as event_organizer {
+        + id : bigint(20) <<pk>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + bank_id : bigint(20) <<FK>>
+        + organizer_type : varchar(50) <<Validate: College|Profession|Institution>>
+        + name : varchar(50)
+        + account_name : varchar(100)
+        + account_status : varchar(50)
+        + account_number : bigint(50)  
+        + bank_name : varchar(100)
+    }
+
+    entity "event_header" as event_header {
+        + id : bigint(20) <<pk>>
+        + name : varchar(100) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + event_organizer_id : bigint(20) <<FK>>
+        + period_start : varchar(8) 
+        + period_end : varchar(8) 
+        + brochure : varchar(500) 
+    }
+
+    entity "event_specialist" as event_specialist {
+        + id : bigint(20) <<pk>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + event_header_id : varchar(50) <<FK>>
+        + customer_specialist_id : bigint(20) <<FK>>       
+    }
+
+    entity "event_detail" as event_detail {
+        + id : bigint(20) <<pk>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + event_header_id : varchar(50) <<FK>>
+        + event_organizer_id : varchar(50) <<FK>>
+        + name : varchar(50) <<UI>>
+        + location : varchar(150) <<UI>>
+        + period_start : varchar(8) <<UI>>
+        + period_end : varchar(8) <<UI>>
+    } 
+
+    entity "event_class" as event_class {
+        + id : bigint(20) <<pk>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + event_header_id : varchar(50) <<FK>> <<UI>>
+        + event_detail_id : varchar(50) <<FK>> <<UI>>
+        + period_start : varchar(8) <<UI>>
+        + period_end : varchar(8) <<UI>>
+        + class : varchar(50) <<UI>> <<Validate: General|Student|Specialist|Nurse|Pharmacist>>
+        + fee : float(32)
+    }        
+}
+
+' FK table event_organizer
+event_header <-- event_organizer $line_color_event : event_header_id
+
+' FK table event_header
+event_organizer <-- event_header $line_color_event : event_organizer_id
+
+' FK table event_specialist
+event_header <-- event_specialist $line_color_event : event_header_id
+customer_specialist <-- event_specialist $line_color_customer : customer_specialist_id
+
+' FK table event_detail
+event_header <-- event_detail $line_color_event : event_header_id
+event_organizer <-- event_detail $line_color_event : event_organizer_id
+
+' FK table event_class
+event_header <-- event_class $line_color_event : event_header_id
+event_detail <-- event_class $line_color_event : event_detail_id
+
+rectangle "REST API Structure" $rectangle_color_structure{
+    entity "office" as office {
+        + id : varchar(5) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + name : varchar(50) <<UI>>
+        + latitude : float(32)
+        + longitude : float(32)
+        + latitude : float(32)
+        + address : varchar(150)
+        + description : varchar(150)
+    }
+
+    entity "marketing_position" as marketing_position {
+        + id : varchar(30) <<PK>>
+        + period : varchar(6) <<PK>> <<UI>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + level : bigint(20) <<UI>>
+    }
+
+    entity "marketing_structure" as marketing_structure {
+        + id : varchar(20) <<PK>>
+        + period : varchar(6) <<PK>> <<UI>>
+        + code : varchar(6) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + closed_edit_area_by_id : bigint(20)
+        + closed_edit_all_by_id : bigint(20)
+        + closed_edit_area_time : datetime(3)
+        + closed_edit_all_time : datetime(3)
+        + marketing_structure_boss_id : varchar(20)
+        + marketing_position_id : varchar(30) <<FK>> <<UI>>
+        + user_id : bigint(20) <<FK>> <<UI>>
+        + office_id : varchar(20) <<FK>> <<UI>>
+        + division_id : varchar(20) <<FK>> <<UI>>
+        + nip : varchar(20) <<UI>>
+        + name : varchar(50) <<UI>>
+        + area_description : varchar(500)
+        + is_closed_edit_area : bool(1)
+        + is_closed_edit_all : bool(1)
+    }
+
+    entity "marketing_structure_area" as marketing_structure_area {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + marketing_structure_id : varchar(30) <<FK>> <<UI>>
+        + city_id : varchar(3) <<FK>> <<UI>>
+    }  
+    
+    entity "hierarchy" as hierarchy {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + marketing_structure_id : varchar(20) <<FK>> <<UI>>
+        + user_id : bigint(20) <<FK>> <<UI>>
+    }
+
+    entity "marketing_structure_territory_customer" as marketing_structure_territory_customer {
+        + id : bigint(20) <<AI>>
+        + marketing_structure_id : varchar(20) <<PK>> <<FK>>
+        + customer_id : varchar(20) <<PK>> <<FK>>
+        + period : varchar(6) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+    }   
+
+    entity "marketing_structure_territory_outlet" as marketing_structure_territory_outlet {
+        + id : bigint(20) <<PK>>
+        + marketing_structure_id : varchar(20) <<PK>> <<FK>>
+        + outlet_id : varchar(20) <<PK>> <<FK>>
+        + period : varchar(6) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + is_default : bool(1)
+    }                
+}
+
+' FK table marketing_structure
+marketing_position <-- marketing_structure $line_color_structure : marketing_position_id
+user <-- marketing_structure $line_color_marketing_user : user_id
+office <-- marketing_structure $line_color_structure : office_id
+division <-- marketing_structure $line_color_marketing_user : division_id
+
+' FK table marketing_structure_area
+marketing_structure <-- marketing_structure_area $line_color_structure : marketing_structure_id
+city <-- marketing_structure_area $line_color_city : city_id
+
+' FK table hierarchy
+marketing_structure <-- hierarchy $line_color_structure : marketing_structure_id
+user <-- hierarchy $line_color_marketing_user : user_id
+
+' FK table marketing_structure_territory_customer
+marketing_structure <-- marketing_structure_territory_customer $line_color_structure : marketing_structure_id
+customer <-- marketing_structure_territory_customer $line_color_customer : customer_id
+
+' FK table marketing_structure_territory_outlet
+marketing_structure <-- marketing_structure_territory_outlet $line_color_structure : marketing_structure_id
+outlet <-- marketing_structure_territory_outlet $line_color_outlet : outlet_id
+
+rectangle "REST API Master Document Proposal" $rectangle_color_master_document{
+    entity "discount_proposal_category_detail" as discount_proposal_category_detail {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + quantity_total : bigint(20)    
+        + amount_total : float(32)       
+        + period_start : varchar(8) <<UI>> 
+        + period_end : varchar(8) <<UI>> 
+        + name : varchar(500) <<UI>>    
+        + user  : varchar(20) <<UI>>    
+        + minimal_amount : float(32)     
+        + maximal_amount : float(32)     
+        + quantity : bigint(20)          
+        + user_maximal_amount : bigint(20) 
+        + administration_file : varchar(1000)
+        + realization : varchar(100)     
+        + note : varchar(1000)           
+        + pic : varchar(100)             
+        + share_qty_percent : float(32)    
+        + share_amount_percent : float(32) 
+        + is_event : bool(1)
+    }
+
+    entity "master_document" as master_document {
+        + id : bigint(20) <<PK>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + discount_proposal_category_detail_id : bigint(20) <<FK>>   
+        + name : varchar(100)
+        + template_document : varchar(500)
+    }    
+}
+' FK table master_document
+discount_proposal_category_detail <-- master_document $line_color_master_document : discount_proposal_category_detail_id
+
+rectangle "REST API Discount Proposal" $rectangle_color_discount_proposal{
+    entity "discount_proposal" as discount_proposal {
+        + id : varchar(20) <<PK>> <<Format: city_id + time now unix>
+        + marketing_structure_id  : varchar(20) <<PK>> <<FK>>
+        + distributor_id : varchar(30) <<PK>> <<FK>>              
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + guarantee_by_id : bigint(20) <<FK>>               
+        + division_id : varchar(30) <<FK>> <<UI>>          
+        + event_header_id : varchar(50) <<FK>> <<UI>>       
+        + city_id : varchar(3) <<FK>>                      
+        + discount_proposal_category_detail_id : bigint(20) <<FK>> <<UI>>
+        + note_guarantee : varchar(500)
+        + note_reject : varchar(500)
+        + period : varchar(6) <<UI>>             
+        + period_start : varchar(8) <<UI>>        
+        + period_end : varchar(8) <<UI>>          
+        + amount_actual : float(32)       
+        + amount_estimation : float(32)   
+        + print_discount_proposal : bool(1) 
+        + status : varchar(20) <<UI>>     
+        + type : varchar(4) <<UI>>        
+        + list_event_class : varchar(500)   
+        + status_rest : bool(1)           
+        + disc_dist_status : varchar(50)   
+        + dms_no : varchar(100)           
+    }
+    
+    entity "discount_proposal_estimation" as discount_proposal_estimation {
+        + id : bigint(20) <<PK>>      
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + discount_proposal_id : varchar(20) <<FK>> <<UI>>    
+        + customer_id : varchar(20) <<FK>> <<UI>>            
+        + outlet_id : varchar(20) <<FK>> <<UI>>              
+        + product_id : varchar(20) <<FK>> <<UI>>             
+        + outlet_invoice_id : varchar(20) <<FK>>        
+        + customer_territory_outlet_id : bigint(20) <<FK>> 
+        + product_max_discount_id : bigint(20) <<FK>> 
+        + quantity_type : varchar(longtext) <<Validate : FULL|SHARED>>
+        + distributor_discount_percent_off : float(32) 
+        + distributor_discount_percent_on : float(32)
+        + principal_discount_percent_off : float(32)
+        + principal_discount_percent_on : float(32)
+        + product_price : float(32)
+        + product_quantity : bigint(20)
+        + total : float(32) 
+    }  
+
+    entity "discount_proposal_on_factur" as discount_proposal_on_factur {
+        + id : bigint(20) <<PK>>      
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + discount_proposal_id : varchar(20) <<FK>> <<UI>>    
+        + customer_id : varchar(20) <<FK>> <<UI>>            
+        + outlet_id : varchar(20) <<FK>> <<UI>>              
+        + product_id : varchar(20) <<FK>> <<UI>>             
+        + outlet_invoice_id : varchar(20) <<FK>>        
+        + customer_territory_outlet_id : bigint(20) <<FK>> 
+        + product_max_discount_id : bigint(20) <<FK>> 
+        + quantity_type : varchar(longtext) <<Validate : FULL|SHARED>>
+        + distributor_discount_percent_off : float(32) 
+        + distributor_discount_percent_on : float(32)
+        + principal_discount_percent_on : float(32)
+        + product_price : float(32)
+        + product_quantity : bigint(20)
+        + total : float(32) 
+    }  
+
+    entity "discount_proposal_recipient" as discount_proposal_recipient {
+        + id : bigint(20) <<PK>> <<Format : time unix>> 
+        + account_id : bigint(20) <<PK>> <<UI>>  
+        + division_id : varchar(30) <<PK>> <<UI>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + customer_id : varchar(20) <<FK>> <<UI>> 
+        + bank_id : bigint(20) <<FK>>
+        + bank_branch_id : bigint(20) <<FK>>
+        + transferred_type : varchar(50)
+        + discount_proposal_id : varchar(20) <<FK>> <<UI>>
+        + realization_by_id : bigint(20) <<FK>>
+        + realization_confirmed_by_id : bigint(20) <<FK>>
+        + return_confirmed_by_id : bigint(20) <<FK>>
+        + discount_proposal_category_detail_id : bigint(20) <<FK>> <<UI>>
+        + period : varchar(6) <<UI>> 
+        + bank_transfer_fee : float(32)
+        + submission_amount : float(32)
+        + submission_total : float(32)
+        + realization_amount : float(32)
+        + realization_amount_remaining : float(32)
+        + realization_at : datetime(3)
+        + realization_confirmed_at : datetime(3)
+        + realization_note : varchar(200)
+        + realization_status : varchar(50)
+        + return_confirmed_at : datetime(3)
+        + return_confirmed_note : varchar(200)
+        + value_return : float(32)
+        + recipient_note : varchar(200) 
+        + list_event_class : varchar(500)
+        + legal_entity : bool(1) 
+        + tax_percent : float(32)
+        + tax_value : float(32)
+        + account_no : bigint(20)
+        + bank_name : varchar(longtext)
+        + bank_branch_name : varchar(longtext)
+    }  
+
+    entity "discount_proposal_payment" as discount_proposal_payment {
+        + id : bigint(20) <<PK>>      
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + discount_proposal_id : varchar(30) <<FK>> <<UI>>
+        + customer_id : varchar(20) <<FK>> <<UI>>
+        + account_id : bigint(20) <<FK>> <<UI>>    
+        + rangkuman_no : varchar(30) <<UI>> <<Format : M.yymm.counter>>
+        + memo_no : varchar(30) <<UI>>  <<Format : R.yymm.counter>> 
+        + period : varchar(6)
+        + transferred_at : datetime(3)
+        + transferred_by_id : bigint(20)
+        + transferred_amount : float(32)
+        + type : varchar(3)
+        + transferred : bool(1)
+        + canceled_transferred : bool(1)
+        + canceled_at : datetime(3)
+        + canceled_by_id : bigint(20)
+        + canceled_rangkuman : varchar(500)
+        + canceled_memo : varchar(500)
+        + canceled_transfer : varchar(500)
+        + print_memo : bool(1)
+        + print_rangkuman : bool(1)
+        + marketing_structure_boss_id : varchar(longtext)
+        + account_no : bigint(20)
+        + withholding_tax_proof : varchar(longtext)
+    }
+
+rectangle "REST API CQRS" $rectangle_color_discount_proposal_cqrs{
+    entity "cqrs_discount_proposal_transferred" as cqrs_discount_proposal_transferred #EF9A9A {
+        + period : varchar(6) <<PK>>
+        + customer_id : varchar(20) <<PK>> <<FK>>
+        --
+        + created_at : datetime(3)
+        + deleted_at : datetime(3)
+        + created_by_id : bigint(20)
+        + deleted_by_id : bigint(20)
+        --
+        + AmountSki1 : float(32)
+        + AmountSki2 : float(32)
+    }
+}
+    entity "discount_proposal_return" as discount_proposal_return {
+        + id : bigint(20) <<PK>>      
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + return_confirmed_by_id : bigint(20) <<FK>>
+        + discount_proposal_recipient_id : bigint(20) <<FK>> <<UI>>
+        + customer_id : varchar(20) <<FK>>
+        + discount_proposal_id : varchar(20) <<FK>>
+        + marketing_structure_id : varchar(20) <<FK>>
+        + no_proof_transfer : varchar(longtext)
+        + image_proof : varchar(longtext)
+        + beginning_balance_value_remaining : float(32)
+        + value_return : float(32) 
+        + ending_balance_remaining : float(32)  
+        + note_remaining : varchar(longtext)
+        + return_confirmed_at : datetime(3)
+        + return_confirmed_note : varchar(200)
+    }
+
+    entity "discount_proposal_event" as discount_proposal_event {
+        + id : bigint(20) <<PK>>      
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + discount_proposal_id : varchar(20) <<FK>> <<UI>>
+        + event_class_id : varchar(50) <<FK>> <<UI>>
+    }
+
+    entity "discount_proposal_confirmation_status" as discount_proposal_confirmation_status {
+        + id : varchar(30) <<PK>> <<UI>> 
+        + type : varchar(15) <<PK>> <<UI>>   
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + description : varchar(100)
+        + dateline : bigint(20)
+        + note : varchar(longtext)
+        + unit : varchar(8)
+        + step : bigint(20)
+    } 
+
+    entity "discount_proposal_confirmation" as discount_proposal_confirmation {
+        + id : bigint(20) <<PK>>   
+        + status : varchar(longtext) <<PK>>   
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + discount_proposal_id : varchar(20) <<FK>> <<UI>>
+        + discount_proposal_confirmation_status_id : varchar(longtext) <<FK>> <<UI>>
+        + note : varchar(longtext) <<FK>> <<UI>>
+        + reference_number : varchar(20)
+    }    
+
+    entity "proposal_document_status" as proposal_document_status {
+        + id : bigint(20) <<PK>>  
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + print_by_id : bigint(20) <<FK>>
+        + deliver_by_id : bigint(20) <<FK>>
+        + finish_by_id  : bigint(20) <<FK>>
+        + discount_proposal_id : varchar(20) <<FK>> <<UI>>
+        + master_document_id : bigint(20) <<FK>> <<UI>> 
+        + discount_proposal_recipient_id : bigint(20) <<FK>> <<UI>>
+        + is_print_status : bool(1)
+        + print_at : datetime(3)
+        + note_status_deliver : varchar(100)
+        + deliver_photo : varchar(100)
+        + deliver_at : datetime(3)
+        + is_deliver_status : bool(1)
+        + finish_at : datetime(3)
+        + is_finish_status : bool(1) 
+        + invitation_no : varchar(50) <<UI>>
+    }    
+
+    entity "customer_balance" as customer_balance {
+        + id : bigint(20) <<PK>>  
+        + customer_id : varchar(longtext) <<PK>>
+        + period : varchar(6) <<PK>>    
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + balance_begin : float(32)
+        + ski_amount_post : float(32)
+        + ski_amount_pre : float(32)
+        + cn_amount_post : float(32)
+        + cn_amount_pre : float(32)
+        + return_amount : float(32)
+        + return_amount_confirm : float(32)
+        + balance_end_post : float(32)
+        + balance_end_pre : float(32)
+        + balance_end_total : float(32)
+        + is_closed : bool(1) 
+        + closed_by_id : bigint(20)
+        + closed_time : datetime(3)
+    }
+
+    entity "credit_note" as credit_note {
+        + id : bigint(20) <<PK>>      
+        + discount_proposal_id : varchar(20) <<PK>> <<FK>> <<UI>>
+        + outlet_id : varchar(20) <<PK>> <<FK>> <<UI>>
+        + customer_id : varchar(20) <<PK>> <<FK>> <<UI>>
+        + product_id : varchar(20) <<PK>> <<FK>> <<UI>>
+        + marketing_structure_id : varchar(20) <<PK>> <<FK>> <<UI>>
+        + period : varchar(6) <<PK>> <<UI>> 
+        + invoice_no : varchar(50) <<PK>> <<UI>>
+        + invoice_date : varchar(10) <<PK>> <<UI>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + qty : float(32)
+        + percent_on : float(32)
+        + percent_off : float(32)
+        + note : varchar(500)
+        + value : float(32)
+        + type : varchar(10)
+        + reference_no : varchar(30)
+        + is_closed : bool(1)
+        + closed_time : datetime(3)
+    }
+
+    entity "credit_note" as credit_note {
+        + id : bigint(20) <<PK>>      
+        + discount_proposal_id : varchar(20) <<PK>> <<FK>> <<UI>>
+        + outlet_id : varchar(20) <<PK>> <<FK>> <<UI>>
+        + customer_id : varchar(20) <<PK>> <<FK>> <<UI>>
+        + product_id : varchar(20) <<PK>> <<FK>> <<UI>>
+        + marketing_structure_id : varchar(20) <<PK>> <<FK>> <<UI>>
+        + period : varchar(6) <<PK>> <<UI>> 
+        + invoice_no : varchar(50) <<PK>> <<UI>>
+        + invoice_date : varchar(10) <<PK>> <<UI>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + qty : float(32)
+        + percent_on : float(32)
+        + percent_off : float(32)
+        + note : varchar(500)
+        + value : float(32)
+        + type : varchar(10)
+        + reference_no : varchar(30)
+        + is_closed : bool(1)
+        + closed_time : datetime(3)
+    }
+
+    entity "cqrs_credit_notes_summary_post" as cqrs_credit_notes_summary_post {
+        + ID :                uint     `gorm:"not null;primaryKey"`
+        + Period             string   `gorm:"size:6;not null;primarykey;uniqueIndex:idx_cqrs_credit_notes_summary_posts"`
+        + DiscountProposalID string   `gorm:"size:20;primarykey;uniqueIndex:idx_cqrs_credit_notes_summary_posts"`
+        + CustomerID         string   `gorm:"size:20;primarykey;uniqueIndex:idx_cqrs_credit_notes_summary_posts"`
+        + period : varchar(6) <<PK>> <<UI>> 
+        + invoice_no : varchar(50) <<PK>> <<UI>>
+        + invoice_date : varchar(10) <<PK>> <<UI>>
+        --
+        + created_at : datetime(3)
+        + updated_at : datetime(3)
+        + created_by_id : bigint(20) <<FK>>
+        + updated_by_id : bigint(20) <<FK>>
+        + deleted_by_id : bigint(20)
+        --
+        + qty : float(32)
+        + percent_on : float(32)
+        + percent_off : float(32)
+        + note : varchar(500)
+        + value : float(32)
+        + type : varchar(10)
+        + reference_no : varchar(30)
+        + is_closed : bool(1)
+        + closed_time : datetime(3)
+    }
+}
+
+' type CqrsCreditNotesSummaryPost struct {
+' 	ID                 uint     `gorm:"not null;primaryKey"`
+' 	Period             string   `gorm:"size:6;not null;primarykey;uniqueIndex:idx_cqrs_credit_notes_summary_posts"`
+' 	DiscountProposalID string   `gorm:"size:20;primarykey;uniqueIndex:idx_cqrs_credit_notes_summary_posts"`
+' 	CustomerID         string   `gorm:"size:20;primarykey;uniqueIndex:idx_cqrs_credit_notes_summary_posts"`
+' 	CnPost             *float32 `gorm:""`
+' 	ValueWithdraw      *float32 `gorm:""`
+' 	Saldo              *float32 `gorm:""`
+' 	DiscountProposal   DiscountProposal
+' 	Customer           customer.Customer
+' 	CreatedAt          time.Time
+' 	UpdatedAt          time.Time
+' 	CreatedBy          user.User
+' 	UpdatedBy          user.User
+' 	ClosedBy           user.User
+' 	DeletedAt          *time.Time `gorm:"index"`
+' 	CreatedByID        uint       `gorm:""`
+' 	UpdatedByID        uint       `gorm:""`
+' 	DeletedByID        *uint      `gorm:""`
+' 	ClosedByID         *uint      `gorm:""`
+' 	WithDrawYN         *uint      `gorm:"size:1"`
+' 	WithDrawPeriode    string     `gorm:"size:6"`
+' 	WithdrawByID       string     `gorm:""`
+' }
+' FK table credit_note
+discount_proposal <-- credit_note $line_color_discount_proposal : discount_proposal_id
+outlet <-- credit_note $line_color_outlet : outlet_id
+customer <-- credit_note $line_color_customer : customer_id
+product <-- credit_note $line_color_product : product_id
+marketing_structure <-- credit_note $line_color_structure : marketing_structure_id
+product <-- credit_note $line_color_product : product_id
+
+
+' FK table discount_proposal
+marketing_structure <-- discount_proposal $line_color_structure : marketing_structure_id
+distributor <-- discount_proposal $line_color_distributor : distributor_id
+marketing_structure <-- discount_proposal $line_color_structure : guarantee_by_id
+division <-- discount_proposal $line_color_marketing_user : division_id
+event_header <-- discount_proposal $line_color_event : event_header_id
+city <-- discount_proposal $line_color_city : city_id
+discount_proposal_category_detail <-- discount_proposal $line_color_master_document : discount_proposal_category_detail_id
+
+' FK table discount_proposal_estimation
+discount_proposal <-- discount_proposal_estimation $line_color_discount_proposal : discount_proposal_id
+customer <-- discount_proposal_estimation $line_color_customer : customer_id
+outlet <-- discount_proposal_estimation $line_color_outlet : outlet_id
+product <-- discount_proposal_estimation $line_color_product : product_id
+outlet <-- discount_proposal_estimation $line_color_outlet : outlet_invoice_id
+customer_territory_outlet <-- discount_proposal_estimation $line_color_customer  : customer_territory_outlet_id
+product_max_discount <-- discount_proposal_estimation $line_color_product : product_max_discount_id
+
+' FK table discount_proposal_on_factur
+discount_proposal <-- discount_proposal_on_factur $line_color_discount_proposal : discount_proposal_id
+customer <-- discount_proposal_on_factur $line_color_customer : customer_id
+outlet <-- discount_proposal_on_factur $line_color_outlet : outlet_id
+product <-- discount_proposal_on_factur $line_color_product : product_id
+outlet <-- discount_proposal_on_factur $line_color_outlet : outlet_invoice_id
+customer_territory_outlet <-- discount_proposal_on_factur $line_color_customer : customer_territory_outlet_id
+product_max_discount <-- discount_proposal_on_factur $line_color_product : product_max_discount_id
+
+' FK table discount_proposal_recipient
+account <-- discount_proposal_recipient $line_color_bank : account_id
+division <-- discount_proposal_recipient $line_color_marketing_user  : division_id
+customer <-- discount_proposal_recipient $line_color_customer : customer_id
+bank <-- discount_proposal_recipient $line_color_bank : bank_id
+bank_branch <-- discount_proposal_recipient $line_color_bank : bank_branch_id
+discount_proposal <-- discount_proposal_recipient $line_color_discount_proposal : discount_proposal_id
+user <-- discount_proposal_recipient $line_color_marketing_user : realization_by_id
+user <-- discount_proposal_recipient $line_color_marketing_user : realization_confirmed_by_id
+discount_proposal_category_detail <-- discount_proposal_recipient $line_color_master_document : discount_proposal_category_detail_id
+
+' FK table discount_proposal_payment
+discount_proposal <-- discount_proposal_payment $line_color_discount_proposal : discount_proposal_id
+customer <-- discount_proposal_payment $line_color_customer : customer_id
+account <-- discount_proposal_payment $line_color_bank : account_id
+
+' FK table cqrs_discount_proposal_transferred
+customer <-- cqrs_discount_proposal_transferred $line_color_customer : customer_id
+
+' FK table discount_proposal_return
+marketing_structure <-- discount_proposal_return $line_color_structure : marketing_structure_id
+discount_proposal_recipient <-- discount_proposal_return $line_color_discount_proposal : discount_proposal_recipient_id
+customer <-- discount_proposal_return $line_color_customer : customer_id
+discount_proposal <-- discount_proposal_return $line_color_discount_proposal : discount_proposal_id
+user <-- discount_proposal_return $line_color_marketing_user : return_confirmed_by_id
+
+' FK table discount_proposal_event
+discount_proposal <-- discount_proposal_event $line_color_discount_proposal : discount_proposal_id
+event_class <-- discount_proposal_event $line_color_event : event_class_id
+
+' FK table discount_proposal_confirmation
+discount_proposal_confirmation_status <-- discount_proposal_confirmation $line_color_discount_proposal : discount_proposal_confirmation_status_id
+
+' FK table proposal_document_status
+user <-- proposal_document_status $line_color_marketing_user : print_by_id
+user <-- proposal_document_status $line_color_marketing_user : deliver_by_id
+user <-- proposal_document_status $line_color_marketing_user : finish_by_id
+discount_proposal <-- proposal_document_status $line_color_discount_proposal : discount_proposal_id
+master_document <-- proposal_document_status $line_color_master_document : master_document_id
+discount_proposal_recipient <-- proposal_document_status $line_color_discount_proposal : discount_proposal_recipient_id
+
+' FK table customer_balance
+customer <-- customer_balance $line_color_customer : customer_id
+
+
+@enduml
